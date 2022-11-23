@@ -1,0 +1,22 @@
+apiVersion: skaffold/v3
+kind: Config
+deploy:
+  kubectl:
+    remoteManifests:
+      - ./infra/k8s/*
+metadata:
+  name: auth-micro
+build:
+  artifacts:
+    - image: mkd/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "server/**/*.ts"
+            dest: .
+
+manifests:
+  rawYaml:
+    - ./infra/k8s/*
