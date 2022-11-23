@@ -10,9 +10,9 @@ process.on("uncaughtException", (err) => {
 require("./app");
 
 // server setting
-const port = process.env?.PORT_SERVER;
-const server = app.listen(3001, "0.0.0.0", () => {
-  console.log(`App running on port ${port}...`);
+
+const server = app.listen(3000, "0.0.0.0", () => {
+  console.log(`App running on port ${3000}...`);
 });
 
 // Handle rejection error
