@@ -40,18 +40,19 @@ async function run() {
     console.log("Connecting..");
     await admin.connect();
     console.log("Connected!");
-    await admin.createTopics({
-      topics: [
-        {
-          topic: "test-topic-1",
-          numPartitions: 2,
-        },
-        {
-          topic: "test-topic-2",
-          numPartitions: 2,
-        },
-      ],
-    });
+    // await admin.createTopics({
+      
+    //   topics: [
+    //     {
+    //       topic: "test-topic-1",
+    //       numPartitions: 2,
+    //     },
+    //     {
+    //       topic: "test-topic-2",
+    //       numPartitions: 2,
+    //     },
+    //   ],
+    // });
     console.log("Created topic successfully");
     await admin.disconnect();
   } catch (e) {
