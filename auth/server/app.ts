@@ -1,6 +1,7 @@
 import express from "express";
 import { AppError, globalErrorHandler } from "@mkdglobal/common";
 import { Kafka, Partitioners } from "kafkajs";
+import { sequelize } from "../storage";
 
 const app = express();
 
@@ -14,6 +15,17 @@ app.use(
     extended: true,
   })
 );
+
+// Check DB connection
+sequelize
+  .authenticate()
+  .then(async () => {
+    console.log("Connection has been established successfully.");
+    await sequelize.sync();
+  })
+  .catch((err: Error) => {
+    console.error("Unable to connect to the database:", err);
+  });
 
 if (!process.env.KAFKA_CLIENT_ID) {
   throw new Error("KAFKA_CLIENT_ID must be defined");
