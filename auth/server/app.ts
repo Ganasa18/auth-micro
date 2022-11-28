@@ -19,7 +19,7 @@ if (!process.env.KAFKA_CLIENT_ID) {
   throw new Error("KAFKA_CLIENT_ID must be defined");
 }
 if (!process.env.KAFKA_URL) {
-  throw new Error("NATS_URL must be defined");
+  throw new Error("KAFKA_URL must be defined");
 }
 
 // Kafka Connect
@@ -37,22 +37,9 @@ run();
 async function run() {
   try {
     const admin = kafka.admin();
-    console.log("Connecting..");
+    console.log("CONNECTING..");
     await admin.connect();
-    console.log("Connected!");
-    await admin.createTopics({
-      topics: [
-        {
-          topic: "test-topic-1",
-          numPartitions: 2,
-        },
-        {
-          topic: "test-topic-2",
-          numPartitions: 2,
-        },
-      ],
-    });
-    console.log("Created topic successfully");
+    console.log("CONNECTED..!");
     await admin.disconnect();
   } catch (e) {
     console.error(`Something bad happend ${e}`);
