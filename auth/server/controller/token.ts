@@ -1,6 +1,6 @@
-import { AuthAttribute } from "../../storage/models/authModel";
 import setExpired from "../utils/expired-token";
 import { Response, Request } from "express";
+import { AuthAttribute } from "../../storage/models/interface";
 const jwt = require("jsonwebtoken");
 
 export const creatSendToken = async (

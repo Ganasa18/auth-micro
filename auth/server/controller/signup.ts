@@ -1,19 +1,32 @@
 import { Request, Response, NextFunction } from "express";
-const jwt = require("jsonwebtoken");
-// import { AppError } from "@mkdglobal/common";
-// import { kafka, Partitioners } from "../app";
 import AuthProvider, { AuthInput } from "../../storage/models/authModel";
 import FuncPublisher from "../events/base-publisher";
-import { creatSendToken } from "./token";
+import { signToken } from "./token";
 
 const authSignUp = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    let { nik, email, password, fullname }: AuthInput = req.body;
+    let {
+      nik,
+      email,
+      password,
+      fullname,
+      employments,
+      area,
+      departement,
+      subdepartement,
+      userActive,
+    }: AuthInput = req.body;
+
     const data: AuthInput = {
       nik,
       email,
       password,
       fullname,
+      employments,
+      area,
+      departement,
+      subdepartement,
+      userActive,
     };
 
     if (email) {
@@ -24,8 +37,18 @@ const authSignUp = () => {
     await FuncPublisher(auth, "test-topic");
     // Publisher SignUp
     auth.password = undefined;
+    // Sign Token
+    const token = signToken(auth);
+    // Set Header Session
+    req.session = {
+      jwt: token,
+    };
 
-    creatSendToken(auth, 200, res, req);
+    return res.status(200).json({
+      status: "success",
+      token,
+      data: auth,
+    });
   };
 };
 

@@ -2,19 +2,15 @@ const bcrypt = require("bcryptjs");
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelizeConnection } from "..";
 import { signToken } from "../../server/controller/token";
-import setExpired from "../../server/utils/expired-token";
-
-export interface AuthAttribute {
-  id: number;
-  email: string;
-  password?: string;
-  nik: number;
-  fullname?: string;
-  token?: string;
-  firsttime?: boolean;
-  updateBy?: string;
-  tokenExpired?: string;
-}
+// import setExpired from "../../server/utils/expired-token";
+import {
+  Area,
+  AuthAttribute,
+  Departement,
+  EmploymentStatus,
+  SubDepartement,
+  userActive,
+} from "./interface";
 
 export interface AuthInput extends Optional<AuthAttribute, "id"> {}
 export interface AuthOuput extends Required<AuthAttribute> {}
@@ -28,6 +24,11 @@ class AuthProvider
   public password?: string | undefined;
   public nik!: number;
   public fullname?: string;
+  public employments?: string;
+  public userActive?: string;
+  public area?: string;
+  public departement?: string;
+  public subdepartement?: string | undefined;
   public firsttime?: boolean;
   public updateBy?: string;
   public token?: string;
@@ -79,11 +80,31 @@ AuthProvider.init(
         },
       },
     },
-
     fullname: {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    employments: {
+      type: DataTypes.ENUM(...Object.values(EmploymentStatus)),
+      allowNull: false,
+    },
+    userActive: {
+      type: DataTypes.ENUM(...Object.values(userActive)),
+      allowNull: false,
+    },
+    area: {
+      type: DataTypes.ENUM(...Object.values(Area)),
+      allowNull: false,
+    },
+    departement: {
+      type: DataTypes.ENUM(...Object.values(Departement)),
+      allowNull: false,
+    },
+    subdepartement: {
+      type: DataTypes.ENUM(...Object.values(SubDepartement)),
+      allowNull: true,
+    },
+
     firsttime: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -98,12 +119,12 @@ AuthProvider.init(
       allowNull: true,
     },
 
-    tokenExpired: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return setExpired();
-      },
-    },
+    // tokenExpired: {
+    //   type: DataTypes.VIRTUAL,
+    //   get() {
+    //     return setExpired();
+    //   },
+    // },
   },
   {
     timestamps: true,
@@ -114,6 +135,7 @@ AuthProvider.init(
     sequelize: sequelizeConnection,
   }
 );
+
 // Hash password beforeCreate
 AuthProvider.beforeCreate(async (User) => {
   const checkUser = await AuthProvider.findOne({
@@ -129,8 +151,6 @@ AuthProvider.beforeCreate(async (User) => {
   }
 });
 
-export default AuthProvider;
-
 AuthProvider.afterValidate(async (User) => {
   const token = signToken(User);
   User.token = token;
@@ -138,108 +158,4 @@ AuthProvider.afterValidate(async (User) => {
   // const token = bcrypt.hashSync(User.email, salt);
 });
 
-// export interface AuthAddModel {
-//   email: string;
-//   password: string;
-// }
-
-// export interface AuthModel extends Model<AuthModel, AuthAddModel> {
-//   email: string;
-//   password: string;
-//   createdAt: string;
-//   updatedAt: string;
-// }
-
-// export interface AuthViewModel {
-//   id: number;
-//   email: string;
-// }
-// export const authProvider = (sequelize: Sequelize) => {
-//   sequelize.define<AuthModel, AuthAddModel>(
-//     "authprovider",
-//     {
-//       email: {
-//         allowNull: false,
-//         type: DataTypes.STRING,
-//       },
-//       password: {
-//         allowNull: false,
-//         type: DataTypes.STRING,
-//       },
-//     },
-//     {
-//       hooks: {
-//         beforeCreate: async (AuthProv: AuthModel) => {
-//           await Password.toHash(AuthProv.password);
-//         },
-//       },
-//     }
-//   );
-// };
-
-// module.exports = authProvider;
-
-// import * as Sequelize from 'sequelize'
-// import { sequelize } from '..'
-
-// export interface AuthProviderInterface {
-//     email: string
-//     password: string
-// }
-
-// export interface AuthModel extends Sequelize.Model<AuthModel, AuthProviderInterface> {
-//     id: number
-//     email: string
-//     password: string
-//     createdAt: string
-//     updatedAt: string
-// }
-
-// export interface AuthViewModel {
-//     id: number
-//     email: string
-// }
-
-// export const authProvider = (sequelize: any) => {
-//   sequelize.define<AuthModel, UserAddModel>("authprovider", {
-//     email: {
-//       allowNull: false,
-//       type: Sequelize.DataTypes.STRING,
-//     },
-//     password: {
-//       allowNull: false,
-//       type: Sequelize.DataTypes.STRING,
-//     },
-//   });
-// };
-
-// export const AuthProvider = sequelize.define<AuthModel, UserAddModel>('authprovider', {
-
-// });
-
-// export const authProvider = (sequelize: any) => {
-//   sequelize.define("authprovider", {
-//     email: {
-//       allowNull: false,
-//       type: Sequelize.DataTypes.STRING,
-//     },
-//     password: {
-//       allowNull: false,
-//       type: Sequelize.DataTypes.STRING,
-//     },
-//   });
-// };
-
-// type AuthAttribute = {
-//   id: number;
-//   email: string;
-//   password: string;
-// };
-
-// type AuthCreationAttribute = Optional<AuthAttribute, "id">;
-
-// export class Auth extends Model<AuthAttribute, AuthCreationAttribute> {
-//   declare id: CreationOptional<number>;
-//   declare email: string;
-//   declare password: string;
-// }
+export default AuthProvider;

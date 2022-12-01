@@ -4,11 +4,15 @@ import { Kafka, Partitioners } from "kafkajs";
 import cookieSession from "cookie-session";
 import { sequelizeConnection } from "../storage";
 import { SignUpConsumer } from "./events/signup-listener-event";
+const cors = require("cors");
 
 const app = express();
 
 // Body parser, reading data from body into req.body
 app.use(express.json());
+
+// CORS
+app.use(cors());
 
 app.set("trust proxy", true);
 
@@ -29,12 +33,15 @@ sequelizeConnection
   .authenticate()
   .then(async () => {
     console.log("Connection has been established successfully.");
-    await sequelizeConnection.sync({ force: true });
+    await sequelizeConnection.sync();
+    // await sequelizeConnection.sync({ force: true });
     console.log("successfully sync database");
   })
   .catch((err: Error) => {
     console.error("Unable to connect to the database:", err);
   });
+
+// CHECK ENV variable
 
 if (!process.env.KAFKA_CLIENT_ID) {
   throw new Error("KAFKA_CLIENT_ID must be defined");
@@ -72,6 +79,14 @@ async function runConsumer() {
 }
 
 runConsumer();
+
+//test route
+app.get("/api/test", (req, res) => {
+  res.status(200).json({
+    success: true,
+    text: "aman",
+  });
+});
 // Routes
 const authRouter = require("./routes/authRoute");
 

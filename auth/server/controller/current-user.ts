@@ -33,13 +33,8 @@ export const currentUser = (
   next();
 };
 
-const getCurrentUser = () => {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).json({
-      status: "sucess",
-      currentUser: req.currentUser || null,
-    });
-  };
+const getCurrentUser = (req: Request, res: Response, next: NextFunction) => {
+  res.send({ currentUser: req.currentUser || null });
 };
 
 export default getCurrentUser;
