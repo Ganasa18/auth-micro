@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
-import { authProvider } from "./models/authModel";
+// import AuthProvider from "./models/authModel";
+
 // import module
 const dbConfig = require("../config");
-
-export const sequelize = new Sequelize(
+let sequelizeConnection: Sequelize;
+sequelizeConnection = new Sequelize(
   dbConfig.DB,
   dbConfig.USER,
   dbConfig.PASSWORD,
   {
     host: dbConfig.HOST,
     dialect: dbConfig.dialect,
-
+    logging: false,
     pool: {
       max: dbConfig.pool.max,
       min: dbConfig.pool.min,
@@ -20,8 +21,9 @@ export const sequelize = new Sequelize(
   }
 );
 
-const modelDefiners = [authProvider];
+// const modelDefiners = [AuthProvider];
+// for (const modelDefiner of modelDefiners) {
+//   new modelDefiner();
+// }
 
-for (const modelDefiner of modelDefiners) {
-  modelDefiner(sequelize);
-}
+export { sequelizeConnection };

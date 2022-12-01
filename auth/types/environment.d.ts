@@ -12,6 +12,9 @@ declare global {
       ENV: "test" | "dev" | "prod";
       KAFKA_CLIENT_ID: string;
       KAFKA_URL: string;
+      JWT_SECRET: string;
+      JWT_EXPIRES_IN: string;
+      JWT_COOKIE_EXPIRES_IN: string;
     }
   }
 }
