@@ -1,37 +1,41 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthInput } from "../../storage/models/authModel";
+import AuthProvider from "../../storage/models/authModel";
 import { AppError } from "@mkdglobal/common";
-import { loginProducer } from "../events/loginPublisher";
-import { kafka, Partitioners } from "../app";
+import { creatSendToken, signToken } from "./token";
+const bcrypt = require("bcryptjs");
 
-const authLogin = () => {
+const userLogin = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    let { email, password } = req.body;
-    if (email) {
-      email = email.toLowerCase();
-    }
-    const data = { email: email, password: password };
-
-    await loginProducer.connect();
-    kafka.producer({ createPartitioner: Partitioners.LegacyPartitioner });
-    const partition = email[0] < "n" ? 0 : 1;
-    console.log(email[0], `To partition ${partition}`);
-
-    await loginProducer
-      .send({
-        topic: "test-topic-3",
-        messages: [{ value: JSON.stringify(req.body) }],
-        // messages: [{ value: JSON.stringify(req.body), partition: partition }],
-      })
-      .then(() => {
-        console.log("Event Published Login");
-      });
-    await loginProducer.disconnect();
-
-    res.status(200).json({
-      message: "successfully",
-      data,
+    let { email, password }: AuthInput = req.body;
+    const user = await AuthProvider.findOne({
+      where: {
+        email,
+      },
     });
+
+    const salt = await bcrypt.genSaltSync(10);
+    const hasedPassword = await bcrypt.hashSync(password, salt);
+
+    if (!user) {
+      // return res.status(401).json({ error: "unauthorized" });
+      next(new AppError("unauthorized", 401));
+    }
+
+    const valid = await bcrypt.compareSync(hasedPassword, user?.password);
+
+    const token = signToken(user!);
+    req.session = {
+      jwt: token,
+    };
+
+    return res.status(200).json({ token, status: "success", data: user });
+    // creatSendToken(user!, 200, res, req);
+
+    // if (valid) {
+
+    // }
   };
 };
 
-export default authLogin;
+export default userLogin;

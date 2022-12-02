@@ -1,6 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import authLogin from "./login";
+import getCurrentUser, { currentUser } from "./current-user";
+import getAllUser from "./getuser";
+import LogOutUser from "./logout";
+import authSignUp from "./signup";
+import userLogin from "./login";
 
-const login = authLogin();
+const signup = authSignUp();
+const getAll = getAllUser();
+const userCurrent = currentUser;
+const getUser = getCurrentUser;
+const logout = LogOutUser();
+const login = userLogin();
 
-export { login };
+export { signup, getAll, getUser, userCurrent, logout, login };
