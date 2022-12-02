@@ -11,11 +11,11 @@ export const creatSendToken = async (
 ) => {
   const token = signToken(userData);
   // Option Token
-  //   const cookieOptions = {
-  //     expires: setExpired(),
-  //     httpOnly: true,
-  //   };
-  //   res.cookie("jwt", token, cookieOptions);
+  const cookieOptions = {
+    expires: setExpired(),
+    httpOnly: true,
+  };
+  res.cookie("jwt", token, cookieOptions);
   // Store json
   req.session = {
     jwt: token,

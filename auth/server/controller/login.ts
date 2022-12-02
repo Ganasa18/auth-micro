@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthInput } from "../../storage/models/authModel";
 import AuthProvider from "../../storage/models/authModel";
 import { AppError } from "@mkdglobal/common";
+import { creatSendToken, signToken } from "./token";
 const bcrypt = require("bcryptjs");
 
 const userLogin = () => {
@@ -13,8 +14,6 @@ const userLogin = () => {
       },
     });
 
-    // console.log(user);
-
     const salt = await bcrypt.genSaltSync(10);
     const hasedPassword = await bcrypt.hashSync(password, salt);
 
@@ -24,9 +23,14 @@ const userLogin = () => {
     }
 
     const valid = await bcrypt.compareSync(hasedPassword, user?.password);
-    return res.status(200).json({ status: "success", data: user });
-    if (valid) {
-    }
+
+    const token = signToken(user!);
+    req.session = {
+      jwt: token,
+    };
+
+    return res.status(200).json({ token, status: "success", data: user });
+    // creatSendToken(user!, 200, res, req);
 
     // if (valid) {
 

@@ -2,17 +2,20 @@ import express, { Request, Response, NextFunction } from "express";
 import { AppError, globalErrorHandler } from "@mkdglobal/common";
 import { Kafka, Partitioners } from "kafkajs";
 import cookieSession from "cookie-session";
+import { json } from "body-parser";
 import { sequelizeConnection } from "../storage";
 import { SignUpConsumer } from "./events/signup-listener-event";
-const cors = require("cors");
+// Importing file-store module
+const filestore = require("session-file-store")(cookieSession);
+import cors from "cors";
 
 const app = express();
 
-// Body parser, reading data from body into req.body
-app.use(express.json());
-
 // CORS
-app.use(cors());
+app.use(cors<Request>({ credentials: true, origin: true }));
+
+// Body parser, reading data from body into req.body
+app.use(json());
 
 app.set("trust proxy", true);
 
