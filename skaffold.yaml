@@ -16,6 +16,14 @@ build:
         manual:
           - src: "server/**/*.ts"
             dest: .
+    - image: mkd/test-kafka
+      context: test-kafka
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
 
 manifests:
   rawYaml:

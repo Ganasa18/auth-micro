@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: test-kafka-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: test-kafka
   template:
     metadata:
       labels:
-        app: auth
+        app: test-kafka
     spec:
       containers:
-        - name: auth
-          image: mkd/auth:latest
+        - name: test-kafka
+          image: mkd/test-kafka:latest
           env:
             - name: KAFKA_CLIENT_ID
               valueFrom:
@@ -26,12 +26,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-srv
+  name: test-kafka-srv
 spec:
   selector:
-    app: auth
+    app: test-kafka
   ports:
-    - name: auth
+    - name: test-kafka
       protocol: TCP
       port: 3000
       targetPort: 3000
